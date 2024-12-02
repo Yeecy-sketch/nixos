@@ -1,0 +1,8 @@
+{
+    "servers": {
+        "nix": {
+            "command": ["nixd"],
+            "highlightingModeRegex": "^Nix$"
+        }
+    }
+}
