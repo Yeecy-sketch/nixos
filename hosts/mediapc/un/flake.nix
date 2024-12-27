@@ -1,6 +1,6 @@
 # kate: replace-tabs on; indent-width 2;
 {
-  description = "NixPC config flake";
+  description = "nixos config flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
@@ -68,6 +68,7 @@
 
   in {
     nixosConfigurations = {
+
       nixpc = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit system; };
 
@@ -85,6 +86,7 @@
         ./hosts/mediapc/configuration.nix
         ];
       };
+
     };
 
   };

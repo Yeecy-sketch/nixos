@@ -3,7 +3,8 @@
 { pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [ docker nvidia-docker docker-compose ];
+  environment.systemPackages = with pkgs; [ docker docker-compose ];
+  hardware.nvidia-container-toolkit.enable = true;
 
   # Enable common container config files in /etc/containers
   virtualisation.containers.enable = true;
@@ -11,9 +12,5 @@
     docker = {
       enable = true;
     };
-  };
-
-  users.users.yeecy = {
-    extraGroups = [ "docker" ];
   };
 }

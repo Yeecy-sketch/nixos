@@ -1,7 +1,6 @@
 { pkgs, config, libs, ... }:
-
+# kate: replace-tabs on; indent-width 2;
 {
-
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
@@ -11,7 +10,6 @@
 
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
-
 
   hardware.nvidia = {
 
@@ -46,5 +44,29 @@
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.vulkan_beta;
   };
+
+  # Temp monitoring
+  systemd.services.nvidia-temperature.path = [ "/run/current-system/sw" ];
+  systemd.services.nvidia-temperature = {
+    description = "Start monitoring Tesla P40 gpu temperature. Accessible from /tmp/nvidia-temprature/p40-temp";
+
+    wantedBy = [ "multi-user.target" ];
+    # requires = [ "fancontrol.service" ];
+    # before = [ "fancontrol.service" ];
+
+    serviceConfig = {
+      # readlink -e $(which nvidia-smi)
+      # i parameter is which gpu
+      ExecStart = [
+      ''${pkgs.coreutils-full}/bin/mkdir -p /tmp/nvidia-temperature''
+      ''${pkgs.coreutils-full}/bin/echo 40000 > /tmp/nvidia-temperature/p40-temp''
+      ''${pkgs.bash}/bin/bash -c 'while :; do t="$(/run/current-system/sw/bin/nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits -i=1)"; ${pkgs.coreutils-full}/bin/echo "$((t * 1000))" > /tmp/nvidia-temprature/p40-temp; sleep 5; done' ''
+      ];
+      # if it should stop, set to a safe 40 degrees
+      ExecStop = [ ''${pkgs.coreutils-full}/bin/echo 40000 > /tmp/nvidia-temperature/p40-temp'' ];
+    };
+  };
+
+  environment.systemPackages = with pkgs; [ pkgs.coreutils-full pkgs.bash];
 
 }

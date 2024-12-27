@@ -7,20 +7,20 @@
       ./external-drives.nix
       ./hardware-configuration.nix
 
-      ./modules/apps/lutris.nix
-      ./modules/apps/prismlauncher.nix
-      ./modules/apps/mullvad.nix
+      ./../../modules/apps/lutris.nix
+      ./../../modules/apps/prismlauncher.nix
+      ./../../modules/apps/mullvad.nix
 
-      ./modules/nvidia/cuda.nix
-      ./modules/nvidia/nvidia.nix
-      ./modules/nvidia/temp_sensor.nix
+      ./../../modules/nvidia/cuda.nix
+      ./../../modules/nvidia/nvidia.nix
+      ./../../modules/nvidia/temp_sensor.nix
 
-      ./modules/virtualization/docker.nix
-      ./modules/virtualization/virt.nix
+      ./../../modules/virtualization/docker.nix
+      ./../../modules/virtualization/virt.nix
 
-      ./modules/mediacenter/mediacenter.nix
+      ./../../modules/mediacenter/mediacenter.nix
 
-      ./modules/lsp/lsp.nix
+      ./../../modules/lsp/lsp.nix
     ];
 
   # Bootloader.
@@ -34,6 +34,22 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+    # enable bluetooth
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
+  hardware.pulseaudio = {
+    package = pkgs.pulseaudioFull;
+  };
+
+
+  systemd.user.services.mpris-proxy = {
+    description = "Mpris proxy";
+    after = [ "network.target" "sound.target" ];
+    wantedBy = [ "default.target" ];
+    serviceConfig.ExecStart = "${pkgs.bluez}/bin/mpris-proxy";
+  };
 
   services.flatpak.enable = true;
 
@@ -91,7 +107,7 @@
   };
 
   # where does it need these?
-  nixpkgs.config.permittedInsecurePackages = [ "dotnet-core-combined" "dotnet-sdk-6.0.428" "dotnet-sdk-wrapped-6.0.428" "dotnet-runtime-6.0.36" ];
+  nixpkgs.config.permittedInsecurePackages = [ "dotnet-core-combined" "dotnet-sdk-6.0.428" "dotnet-sdk-wrapped-6.0.428" "dotnet-runtime-6.0.36" "dotnet-runtime-wrapped-6.0.36"];
 
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -101,12 +117,22 @@
   users.users.yeecy = {
     isNormalUser = true;
     description = "Yeecy Yce";
-    extraGroups = [ "networkmanager" "wheel" "mediacenter" ];
+    extraGroups = [ "networkmanager" "wheel" "mediacenter"  "docker" ];
     uid = 1000;
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 65530 ];
+    allowedUDPPorts = [ 65530 ];
+    allowedUDPPortRanges = [
+      { from = 8096; to = 8097; }
+    ];
+  };
+
 
   programs.steam = {
     enable = true;
@@ -115,7 +141,8 @@
   };
 
   environment.systemPackages = with pkgs; [
-  # (callPackage ./modules/blender { inherit pkgs; } )
+  # (callPackage ./../../modules/blender { inherit pkgs; } )
+  pulseaudio-dlna
   ungoogled-chromium
   easyeffects
   # "social" apps
@@ -126,6 +153,8 @@
   firefox
   llama-from-source
   lm_sensors
+  flameshot
+  unstable.r2modman
 
   # video players :]
   kdePackages.dragon

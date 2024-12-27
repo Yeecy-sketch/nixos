@@ -73,16 +73,7 @@
 
         modules = [
         ({ ... }: { nixpkgs.overlays = [ overlay-unstable llama-source-overlay llama-cpp-overlay blender-overlay ]; })
-        ./hosts/nixpc/configuration.nix
-        ];
-      };
-
-      mediapc = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit system; };
-
-        modules = [
-        ({ ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
-        ./hosts/mediapc/configuration.nix
+        ./configuration.nix
         ];
       };
     };
