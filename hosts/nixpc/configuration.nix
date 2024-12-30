@@ -155,6 +155,8 @@
   lm_sensors
   flameshot
   unstable.r2modman
+  nix-direnv
+  direnv
 
   # video players :]
   kdePackages.dragon

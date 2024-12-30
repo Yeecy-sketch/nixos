@@ -19,10 +19,10 @@
         allowUnfree = true;
         cudaSupport = true;
         cudnnSupport = true;
-        cudaCapabilities = [ "8.6" "6.1" ]; # llama.cpp flake
-        cudaEnableForwardCompat = false; # llama.cpp flake
+        cudaCapabilities = [ "8.6" "6.1" ];
+        cudaEnableForwardCompat = false;
         packageOverrides = pkgs: {
-          # llama-cpp = ( builtins.getFlake "github:ggerganov/llama.cpp" ).packages.${builtins.currentSystem}.default; # didn't work :<
+          # llama-cpp = ( builtins.getFlake "github:ggerganov/llama.cpp" ).packages.${builtins.currentSystem}.default; # uhhh, didn't work :<
         };
       };
     };
@@ -50,7 +50,6 @@
           sha256 = "sha256-K3x0ou7GkXhFrs2Ii0GMPiFLGKBP417FKl2WgcbnnOk="; # put pkgs.lib.fakeSha256 and wait for error with the correct hash
         };
         cudaSupport = true;
-        # config.cudaSupport = true;
       });
     });
 
